@@ -11,12 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import michele.lombardi.mytimer.TimerPanel;
+//import michele.lombardi.mytimer.TimerPanel;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -25,7 +26,7 @@ public class Board extends JPanel implements ActionListener {
     private final int DOT_SIZE = 10;
     private final int ALL_DOTS = 900;
     private final int RAND_POS = 29;
-    //private final int DELAY = 140;
+    private final int DELAY = 140;
 
     private final int x[] = new int[ALL_DOTS];
     private final int y[] = new int[ALL_DOTS];
@@ -39,6 +40,9 @@ public class Board extends JPanel implements ActionListener {
     private boolean upDirection = false;
     private boolean downDirection = false;
     private boolean inGame = true;
+    
+    private Timer timer = new Timer (DELAY, this);
+    private long startTime;
    
 
 
@@ -81,6 +85,16 @@ public class Board extends JPanel implements ActionListener {
     	g.setColor(Color.BLUE);
     	g.fillOval(x, y, DOT_SIZE, DOT_SIZE);
     }
+    
+    private void drawTime(Graphics g){
+    	g.setColor(Color.WHITE);
+    	
+    	long currentTime = System.currentTimeMillis();
+    	long elapsedTime = currentTime - startTime;
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+    	g.drawString(sdf.format(elapsedTime), 10, 30);
+    }
    
 
     private void initGame() {
@@ -92,6 +106,8 @@ public class Board extends JPanel implements ActionListener {
         }
 
         locateApple();
+        timer.start();
+        startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -103,16 +119,13 @@ public class Board extends JPanel implements ActionListener {
     
     private void doDrawing(Graphics g) {
         if (inGame) {
-
-            //g.drawImage(apple, apple_x, apple_y, this);
+        	drawTime(g);
         	drawApple(g);
 
             for (int z = 0; z < dots; z++) {
                 if (z == 0) {
-                    //g.drawImage(head, x[z], y[z], this);
                 	drawHead(g, x[z], y[z]);
                 } else {
-                    //g.drawImage(ball, x[z], y[z], this);
                     drawBall(g, x[z], y[z]);
                 }
             }
@@ -134,6 +147,8 @@ public class Board extends JPanel implements ActionListener {
         g.setColor(Color.white);
         g.setFont(small);
         g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2);
+        
+        timer.stop();
     }
 
     private void checkApple() {
@@ -195,7 +210,7 @@ public class Board extends JPanel implements ActionListener {
         }
         
         if(!inGame) {
-            //stop time
+            timer.stop();
         }
     }
 
